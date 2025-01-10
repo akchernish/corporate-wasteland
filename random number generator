@@ -1,0 +1,115 @@
+/** @OnlyCurrentDoc */
+
+/**11/13/2023 v1.0.0 begin testing for rando gen */
+
+function onOpen() {
+var ui = SpreadsheetApp.getUi();
+ui.createMenu('custom')
+.addItem('generate random', 'randoinit')
+.addToUi();
+}
+
+/** Creates a new tab in the doc */
+function autonewtab() {
+var spreadsheet = SpreadsheetApp.getActive();
+spreadsheet.insertSheet(1);
+spreadsheet.getActiveSheet().setName('number key');
+};
+
+/** deletes the number key tab */
+function autodeltab() {
+var spreadsheet = SpreadsheetApp.getActive();
+var byebye = spreadsheet.getSheetByName('number key');
+spreadsheet.deleteSheet(byebye);
+}
+
+/** Full function that checks if there's already a key started before running rando
+
+still needs some work... could be more efficient, also has possibility of dup
+*/
+function randoinit(){
+var spreadsheet = SpreadsheetApp.getActive();
+var empty = spreadsheet.getSheetByName('number key').getLastRow();
+var keyfirst = spreadsheet.getSheetByName("number key").getRange('A2');
+spreadsheet.setActiveSheet(spreadsheet.getSheetByName('Main List'), true);
+spreadsheet.getRange('B2').activate();
+/** If number key tab only has one row then it sets the first value to 12345 /
+if (empty == 1){
+keyfirst.setValue(spreadsheet.getActiveCell().getValue());
+keyfirst.offset(0,1).setValue('12345');
+}
+/* runs the rando program after setting first value, or just runs it if we don't need first value */
+giverando();
+}
+
+function giverando() {
+var spreadsheet = SpreadsheetApp.getActive();
+spreadsheet.setActiveSheet(spreadsheet.getSheetByName('Main List'), true);
+spreadsheet.getRange('B2').activate();
+var mainval = spreadsheet.getActiveCell();
+var keyval = spreadsheet.getSheetByName('number key').getRange('A2');
+var keylen = spreadsheet.getSheetByName('number key').getLastRow();
+var rng = 12345
+
+/** while there's a value in the data sheet it iterates down /
+while (!mainval.isBlank()){
+/* need this here to reset the keylen and keyval for each iteration */
+keylen = spreadsheet.getSheetByName('number key').getLastRow();
+keyval = spreadsheet.getSheetByName('number key').getRange('A2');
+/**checks the length of the key sheet and iterates that many times */
+while (keylen>1){
+/**if it finds a hit, it adds the number to the main sheet
+* and sets keylen to 0 so we can exit the while function without
+* iterating down the whole list
+*/
+if (mainval.getValue() == keyval.getValue()){
+spreadsheet.getActiveCell().offset(0,1).activate();
+spreadsheet.getActiveCell().setValue(keyval.offset(0,1).getValue());
+keylen = 0
+/**if it does NOT find a hit, then it reduces keylen by one
+* and moves down the list to keep checking
+*/
+} else {
+keyval = keyval.offset(1,0)
+keylen--
+}
+
+  /**keylen will only be 1 if it goes through the whole list and does
+   * not find a hit. In that case, it assigns random number based on rng
+   * and string length and stores that value so it keeps iterating through
+   * the numbers without a dup. It then sets the main sheet to the newly
+   * assigned value.
+   */
+  if (keylen==1){
+    rng = rng + mainval.getValue().length;
+    keyval.setValue(mainval.getValue());
+    keyval.offset(0,1).setValue(rng);
+    spreadsheet.getActiveCell().offset(0,1).activate();
+    spreadsheet.getActiveCell().setValue(keyval.offset(0,1).getValue());
+  }
+
+  
+}
+
+/**last thing to do is iterate down the main list in the 
+ * outermost while. This resets the mainval to the next item in the list.
+ */
+spreadsheet.getActiveCell().offset(1,-1).activate();
+mainval = spreadsheet.getActiveCell();
+}
+
+}
+
+/** these aren't used, just messing around */
+function moveit() {
+var spreadsheet = SpreadsheetApp.getActive();
+spreadsheet.getCurrentCell().offset(2, 2).activate();
+};
+
+function dothething() {
+var spreadsheet = SpreadsheetApp.getActive();
+spreadsheet.getCurrentCell().offset(0, 1).activate();
+spreadsheet.getCurrentCell().setValue('1234');
+spreadsheet.getCurrentCell().offset(1, -1).activate();
+};
+
