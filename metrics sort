@@ -1,0 +1,150 @@
+/** @OnlyCurrentDoc */
+
+/**
+v2.0 testing, simplified one data stream
+*/
+
+// creates menu options and links functions
+function onOpen() {
+var ui = SpreadsheetApp.getUi();
+ui.createMenu('Run Sort Function')
+.addItem('Do The Thing', 'moveitmoveit')
+.addItem('Almost Do The Thing', 'prepfornew')
+.addItem('Undo the thing', 'deletelast')
+.addToUi();
+}
+
+function moveitmoveit() {
+movekpi();
+movefs();
+}
+
+function movekpi() { //Moves the kpi data
+/**set init location and activate call with name in it */
+var spreadsheet = SpreadsheetApp.getActive();
+
+var ui = SpreadsheetApp.getUi();
+var date = ui.prompt("When tho?");
+
+spreadsheet.setActiveSheet(spreadsheet.getSheetByName('DATA'), true);
+spreadsheet.getRange('B4').activate();
+var endcheck = spreadsheet.getActiveCell();
+
+/**loop condition, checks if active cell is blank and stops if it is */
+while (!endcheck.isBlank()){
+
+/**define variables for the page creation */
+var expertname = spreadsheet.getActiveCell().getValue();
+var expertpage = spreadsheet.getSheetByName(expertname);
+
+/**creates the new page if expert doesn't already have own page, uses TEMP as the base template */
+if (!expertpage) {
+spreadsheet.getSheetByName("TEMP").activate();
+spreadsheet.duplicateActiveSheet();
+spreadsheet.getSheetByName("Copy of TEMP").setName(expertname);
+}
+
+/**need the var redefine here, moves the data to the correct page */
+var expertpage = spreadsheet.getSheetByName(expertname);
+
+/*activates the expert's sheet and moves the goods/
+spreadsheet.setActiveSheet(spreadsheet.getSheetByName(expertname), true);
+spreadsheet.getRange('A30').setValue(date.getResponseText());
+spreadsheet.getRange('B30').activate();
+spreadsheet.getRange(''DATA'!C4:4').copyTo(spreadsheet.getActiveRange());
+
+/**this is going to delete the now empty row and scoot the data up, then we can loop */
+spreadsheet.setActiveSheet(spreadsheet.getSheetByName('DATA'), true);
+spreadsheet.getRange('4:4').activate();
+spreadsheet.getActiveSheet().deleteRows(spreadsheet.getActiveRange().getRow(), spreadsheet.getActiveRange().getNumRows());
+
+spreadsheet.getRange('B4').activate();
+endcheck=spreadsheet.getActiveCell();
+}
+
+spreadsheet.deleteSheet(spreadsheet.getSheetByName('DATA'));
+
+};
+
+function movefs() { //Moves the fs data
+/**set init location and activate call with name in it */
+var spreadsheet = SpreadsheetApp.getActive();
+
+spreadsheet.setActiveSheet(spreadsheet.getSheetByName('FSDATA'), true);
+spreadsheet.getRange('B4').activate();
+var endcheck = spreadsheet.getActiveCell();
+
+/**loop condition, checks if active cell is blank and stops if it is */
+while (!endcheck.isBlank()){
+
+/**define variables for the page creation */
+var expertname = spreadsheet.getActiveCell().getValue();
+var expertpage = spreadsheet.getSheetByName(expertname);
+
+/**creates the new page if expert doesn't already have own page, uses TEMP as the base template */
+if (!expertpage) {
+spreadsheet.getSheetByName("TEMP").activate();
+spreadsheet.duplicateActiveSheet();
+spreadsheet.getSheetByName("Copy of TEMP").setName(expertname);
+}
+
+/**need the var redefine here, moves the data to the correct page */
+var expertpage = spreadsheet.getSheetByName(expertname);
+
+/*activates the expert's sheet and moves the goods/
+spreadsheet.setActiveSheet(spreadsheet.getSheetByName(expertname), true);
+spreadsheet.getRange('O30').setValue(spreadsheet.getRange('A30').getValue());
+spreadsheet.getRange('P30').activate();
+spreadsheet.getRange(''FSDATA'!C4:4').copyTo(spreadsheet.getActiveRange());
+
+/**this is going to delete the now empty row and scoot the data up, then we can loop */
+spreadsheet.setActiveSheet(spreadsheet.getSheetByName('FSDATA'), true);
+spreadsheet.getRange('4:4').activate();
+spreadsheet.getActiveSheet().deleteRows(spreadsheet.getActiveRange().getRow(), spreadsheet.getActiveRange().getNumRows());
+
+spreadsheet.getRange('B4').activate();
+endcheck=spreadsheet.getActiveCell();
+}
+
+spreadsheet.deleteSheet(spreadsheet.getSheetByName('FSDATA'));
+
+};
+
+function prepfornew() {
+var spreadsheet = SpreadsheetApp.getActive();
+var sheets = SpreadsheetApp.getActiveSpreadsheet().getSheets();
+/**sets init index to be last sheet */
+var i = spreadsheet.getNumSheets() - 1
+
+/**Moves the template sheet to front so it won't be impacted */
+spreadsheet.getSheetByName("TEMP").activate();
+spreadsheet.moveActiveSheet(1);
+
+/**loops through and adds a blank row for new data to come in */
+while (i > 0){
+sheets[i].getRange('A30').activate();
+spreadsheet.getActiveSheet().insertRowsBefore(spreadsheet.getActiveRange().getRow(), 1);
+i--
+}
+
+spreadsheet.insertSheet('DATA',0);
+spreadsheet.insertSheet('FSDATA',0);
+};
+
+function deletelast() {
+var spreadsheet = SpreadsheetApp.getActive();
+var sheets = SpreadsheetApp.getActiveSpreadsheet().getSheets();
+/**sets init index to be last sheet */
+var i = spreadsheet.getNumSheets() - 1
+
+/**Moves the template sheet to front so it won't be impacted */
+spreadsheet.getSheetByName("TEMP").activate();
+spreadsheet.moveActiveSheet(1);
+
+/**loops through and adds a blank row for new data to come in */
+while (i > 0){
+sheets[i].getRange('A30').activate();
+spreadsheet.getActiveSheet().deleteRow(spreadsheet.getActiveRange().getRow());
+i--
+}
+};
